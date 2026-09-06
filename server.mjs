@@ -7,7 +7,7 @@ http
   .createServer((req, res) => {
     if (req.method === 'GET' && (req.url === '/' || req.url === '/health')) {
       res.writeHead(200, { 'Content-Type': 'text/plain; charset=utf-8' });
-      res.end('hola diplyy\n');
+      res.end('hola diply-test\n');
       return;
     }
     res.writeHead(404);
