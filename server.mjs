@@ -189,6 +189,20 @@ async function cineOverview(client) {
   return { generos, peliculas, actores, reparto };
 }
 
+function readBuildArgs() {
+  // Keys declared as ARG/ENV in Dockerfile (set via Diply Scope → Build args).
+  const keys = ['HELLO', 'APP_ENV', 'BUILD_MESSAGE'];
+  const values = {};
+  for (const key of keys) {
+    values[key] = process.env[key] ?? null;
+  }
+  return {
+    source: 'Dockerfile ARG/ENV (Diply build args)',
+    note: 'Si ves null, seteá el build arg en el scope, redeployá (rebuild) y volvé a pegarle a este endpoint.',
+    buildArgs: values,
+  };
+}
+
 async function main() {
   const client = new Client(connectionConfig());
   await client.connect();
@@ -217,6 +231,7 @@ async function main() {
             message: 'hola diply',
             endpoints: [
               '/health',
+              '/build-args',
               '/usuarios',
               '/cine',
               '/generos',
@@ -225,6 +240,11 @@ async function main() {
               '/reparto',
             ],
           });
+          return;
+        }
+
+        if (url === '/build-args') {
+          json(res, 200, readBuildArgs());
           return;
         }
 
