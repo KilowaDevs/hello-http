@@ -1,0 +1,42 @@
+# Local only — en Diply la Postgres la crea el scope (Fase 20) e inyecta:
+# DATABASE_URL, PGHOST, PGPORT, PGUSER, PGPASSWORD, PGDATABASE
+
+name: hello-http
+
+services:
+  postgres:
+    image: postgres:16
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: diply
+      POSTGRES_PASSWORD: diply
+      POSTGRES_DB: diply
+    ports:
+      - '5434:5432'
+    volumes:
+      - hello_http_pg:/var/lib/postgresql/data
+    healthcheck:
+      test: ['CMD-SHELL', 'pg_isready -U diply -d diply']
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+  app:
+    build: .
+    restart: unless-stopped
+    depends_on:
+      postgres:
+        condition: service_healthy
+    environment:
+      PORT: '3000'
+      DATABASE_URL: postgres://diply:diply@postgres:5432/diply
+      PGHOST: postgres
+      PGPORT: '5432'
+      PGUSER: diply
+      PGPASSWORD: diply
+      PGDATABASE: diply
+    ports:
+      - '3002:3000'
+
+volumes:
+  hello_http_pg:
