@@ -2,11 +2,30 @@
 
 App mínima para probar un deploy de Diply (y Postgres gestionada del scope).
 
-- `GET /` y `GET /usuarios` → JSON con usuarios mock
-- `GET /health` → `ok`
 - Escucha `0.0.0.0:$PORT` (Diply inyecta `PORT`)
-- Al arrancar: crea tabla `usuarios (nombre, apellido)` e inserta filas mock si está vacía
+- Al arrancar: crea tablas + seed mock si están vacías
 - `Dockerfile` en la raíz
+
+## Endpoints
+
+| Ruta | Qué devuelve |
+| --- | --- |
+| `GET /health` | `ok` |
+| `GET /` | índice de endpoints |
+| `GET /usuarios` | usuarios mock |
+| `GET /cine` | géneros + películas + actores + reparto |
+| `GET /generos` | géneros |
+| `GET /peliculas` | películas (con género) |
+| `GET /actores` | actores |
+| `GET /reparto` | N:N película ↔ actor (con rol) |
+
+## Schema (relaciones)
+
+```text
+usuarios
+generos 1──N peliculas
+actores N──N peliculas  (vía pelicula_actores)
+```
 
 ## Env (Diply / Fase 20)
 
@@ -23,5 +42,5 @@ PGDATABASE
 
 ```bash
 docker compose up --build
-curl http://localhost:3002/
+curl http://localhost:3002/cine
 ```
